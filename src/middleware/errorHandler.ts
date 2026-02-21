@@ -21,15 +21,19 @@ export function errorHandler(
     }
 
     // Handle known operational errors
-    if (err instanceof ValidationError) {
-        errorResponse(res, err.message, err.statusCode, {
-            errors: err.errors,
+    // NOTE: Also check `.name` because Jest's ESM module isolation can produce two
+    // separate class instances for the same module, making plain `instanceof` fail.
+    if (err instanceof ValidationError || err.name === "ValidationError") {
+        const validationErr = err as ValidationError;
+        errorResponse(res, validationErr.message, validationErr.statusCode ?? 422, {
+            errors: (validationErr as ValidationError).errors ?? {},
         });
         return;
     }
 
-    if (err instanceof AppError) {
-        errorResponse(res, err.message, err.statusCode);
+    if (err instanceof AppError || (err as AppError).statusCode !== undefined) {
+        const appErr = err as AppError;
+        errorResponse(res, appErr.message, appErr.statusCode);
         return;
     }
 
