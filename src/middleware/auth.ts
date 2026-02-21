@@ -2,7 +2,6 @@ import type { Request, Response, NextFunction } from "express";
 import { verifyAccessToken } from "../utils/auth.js";
 import { UnauthorizedError } from "../utils/errors.js";
 import type { TokenPayload } from "../utils/auth.js";
-import { logger } from "../utils/logger.js";
 
 // Extend Express Request to include user information
 declare global {
