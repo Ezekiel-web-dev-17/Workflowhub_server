@@ -38,8 +38,8 @@ export function createApp(): express.Application {
     // ─── File Upload ──────────────────────────────────
     app.use(
         fileUpload({
-            useTempFiles: true,
-            tempFileDir: "/tmp/",
+            useTempFiles: false,
+            // tempFileDir: "/tmp/",
             limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB
             abortOnLimit: true,
         })

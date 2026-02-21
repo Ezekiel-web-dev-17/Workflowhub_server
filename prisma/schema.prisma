@@ -2,7 +2,7 @@
 // Learn more: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../src/generated/prisma"
 }
 
@@ -20,14 +20,135 @@ enum Role {
 // ─── Models ───────────────────────────────────────────
 
 model User {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  password  String
-  role      String   @default("USER")
-  avatar    String?
+  id             String     @id @default(cuid())
+  name           String
+  email          String     @unique
+  password       String
+  role           Role     @default(USER)
+  avatar         String?
+  createdAt      DateTime   @default(now()) @map("created_at")
+  updatedAt      DateTime   @updatedAt @map("updated_at")
+  workflows      Workflow[] @relation("author")
+  savedWorkflows Workflow[] @relation("savedBy")
+  reviews        Review[]
+
+  @@map("users")
+}
+
+model Step {
+  id         String   @id @default(cuid())
+  title      String
+  description String
+  demoText   String?
+  workflowId String
+  workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  @@map("steps")
+}
+
+model Workflow {
+  id          String    @id @default(cuid())
+  title       String
+  role        String
+  description String
+  toolStack   String[]
+  steps       Step[]
+  insight     String
+  isDraft     Boolean   @default(true)
+  likes       Int       @default(0)
+  views       Int       @default(0)
+  clones      Int       @default(0)
+  author      User      @relation("author", fields: [authorId], references: [id])
+  authorId    String
+  comments    Comment[]
+  savedBy     User[]    @relation("savedBy")
+  setupTime   String
+  result      WorkflowResult?
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  @@map("workflows")
+}
+
+model WorkflowResult {
+  id         String   @id @default(cuid())
+  url        String
+  width      Int
+  height     Int
+  format     String
+  workflowId String @unique
+  workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  @@map("workflow_results")
+}
+
+model Comment {
+  id         String   @id @default(cuid())
+  content    String
+  workflowId String
+  workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map("comments")
+}
+
+// ─── Tools ────────────────────────────────────────────
+
+model Tools {
+  id           Int            @id @default(autoincrement())
+  name         String         @unique
+  description  String
+  avgTimeSaved String
+  bestUseCases String[]
+  poorUseCases String[]
+  rating       Float          @default(0)
+  rateCount    Int            @default(0)
+  reviews      Review[]
+  alternatives Alternative[]
+  pricing      ToolPricing[]
+  image  String?
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
+
+  @@map("tools")
+}
+
+// A short text for when users should consider switching to this alternative.
+model Alternative {
+  id     Int    @id @default(autoincrement())
+  name   String
+  useIf  String // e.g. "When you need offline support"
+  toolId Int
+  tool   Tools  @relation(fields: [toolId], references: [id], onDelete: Cascade)
+
+  @@unique([toolId, name])
+  @@map("alternatives")
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  rating    Int      // 1–5
+  content   String
+  toolId    Int
+  tool      Tools    @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@map("users")
+  // One review per user per tool
+  @@unique([toolId, userId])
+  @@map("reviews")
+}
+
+model ToolPricing {
+  id           Int    @id @default(autoincrement())
+  pricingTitle String // e.g. "Pro", "Enterprise"
+  price        Float
+  per          String // e.g. "month", "year", "seat"
+  toolId       Int
+  tool         Tools  @relation(fields: [toolId], references: [id], onDelete: Cascade)
+
+  @@map("tool_pricing")
 }

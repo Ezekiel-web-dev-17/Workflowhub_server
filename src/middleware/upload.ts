@@ -10,7 +10,6 @@ export interface CloudinaryUploadResult {
     width: number;
     height: number;
     format: string;
-    bytes: number;
 }
 
 interface UploadOptions {
@@ -44,6 +43,11 @@ export function uploadToCloudinary(options: UploadOptions) {
             }
 
             const file = req.files.file as UploadedFile;
+
+            if (Array.isArray(file)) {
+                throw new BadRequestError("Multiple files uploaded under a single field name are not allowed.");
+            }
+
             const maxSize =
                 (options.maxSizeMB ?? DEFAULT_MAX_SIZE_MB) * 1024 * 1024;
             const allowedTypes =
@@ -82,7 +86,6 @@ export function uploadToCloudinary(options: UploadOptions) {
                 width: result.width,
                 height: result.height,
                 format: result.format,
-                bytes: result.bytes,
             } satisfies CloudinaryUploadResult;
 
             logger.info(`File uploaded to Cloudinary: ${result.public_id}`);
