@@ -147,8 +147,7 @@ export async function update_workflow(req: Request, res: Response, next: NextFun
             try {
                 req.body.steps = JSON.parse(req.body.steps);
             } catch (e) {
-                // If it fails to parse, stop the request and send a 400 error
-                return res.status(400).json({ error: "Invalid JSON format for steps." });
+                throw new BadRequestError("Invalid JSON format for steps.");
             }
         }
 
