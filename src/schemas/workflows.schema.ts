@@ -73,7 +73,6 @@ export const createWorkflowSchema = z
         "insight",
         "description",
         "setupTime",
-        "uploadedFile",
         "steps",
       ] as const;
       for (const field of required) {
