@@ -13,5 +13,6 @@ process.env["CLOUDINARY_API_SECRET"] = "test-api-secret";
 process.env["ARCJET_KEY"] = "test-arcjet-key";
 process.env["CORS_ORIGIN"] = "http://localhost:3000";
 process.env["COOKIE_SECRET"] = "test-cookie-secret";
-process.env["DATABASE_URL"] = "postgresql://test:test@localhost:5432/workflowhub_test";
+process.env["DATABASE_URL"] =
+  "postgresql://test:test@localhost:5432/workflowhub_test";
 process.env["REDIS_URL"] = "redis://localhost:6379";

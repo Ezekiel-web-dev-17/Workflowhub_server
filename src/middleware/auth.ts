@@ -5,11 +5,11 @@ import type { TokenPayload } from "../utils/auth.js";
 
 // Extend Express Request to include user information
 declare global {
-    namespace Express {
-        interface Request {
-            user?: TokenPayload;
-        }
+  namespace Express {
+    interface Request {
+      user?: TokenPayload;
     }
+  }
 }
 
 /**
@@ -17,52 +17,52 @@ declare global {
  * from the Authorization header (Bearer <token>).
  */
 export function authenticate(
-    req: Request,
-    _res: Response,
-    next: NextFunction
+  req: Request,
+  _res: Response,
+  next: NextFunction,
 ): void {
-    try {
-        const authHeader = req.headers.authorization;
+  try {
+    const authHeader = req.headers.authorization;
 
-        if (!authHeader?.startsWith("Bearer ")) {
-            throw new UnauthorizedError("No token provided");
-        }
-
-        const token = authHeader.split(" ")[1];
-
-        if (!token) {
-            throw new UnauthorizedError("No token provided");
-        }
-
-        const decoded = verifyAccessToken(token);
-        req.user = decoded;
-        next();
-    } catch (error) {
-        if (error instanceof UnauthorizedError) {
-            next(error);
-        } else {
-            next(new UnauthorizedError("Invalid or expired token"));
-        }
+    if (!authHeader?.startsWith("Bearer ")) {
+      throw new UnauthorizedError("No token provided");
     }
+
+    const token = authHeader.split(" ")[1];
+
+    if (!token) {
+      throw new UnauthorizedError("No token provided");
+    }
+
+    const decoded = verifyAccessToken(token);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    if (error instanceof UnauthorizedError) {
+      next(error);
+    } else {
+      next(new UnauthorizedError("Invalid or expired token"));
+    }
+  }
 }
 
 /**
  * Authorization middleware — checks if the user has one of the allowed roles.
  */
 export function authorize(...allowedRoles: string[]) {
-    return (req: Request, _res: Response, next: NextFunction): void => {
-        if (!req.user) {
-            return next(new UnauthorizedError("Authentication required"));
-        }
+  return (req: Request, _res: Response, next: NextFunction): void => {
+    if (!req.user) {
+      return next(new UnauthorizedError("Authentication required"));
+    }
 
-        if (!req.user.role || !allowedRoles.includes(req.user.role)) {
-            return next(
-                new UnauthorizedError(
-                    "You do not have permission to perform this action"
-                )
-            );
-        }
+    if (!req.user.role || !allowedRoles.includes(req.user.role)) {
+      return next(
+        new UnauthorizedError(
+          "You do not have permission to perform this action",
+        ),
+      );
+    }
 
-        next();
-    };
+    next();
+  };
 }
