@@ -127,16 +127,16 @@ export async function createWorkflow(
       // If uploadedFile exists, we tell Prisma to `create` the result right now
       ...(uploadedFile
         ? {
-            result: {
-              create: {
-                // Assuming your data is on uploadedFile like in the update function
-                url: uploadedFile.secure_url,
-                width: uploadedFile.width,
-                height: uploadedFile.height,
-                format: uploadedFile.format,
-              },
+          result: {
+            create: {
+              // Assuming your data is on uploadedFile like in the update function
+              url: uploadedFile.secure_url,
+              width: uploadedFile.width,
+              height: uploadedFile.height,
+              format: uploadedFile.format,
             },
-          }
+          },
+        }
         : {}),
     },
     include: WORKFLOW_INCLUDE,
@@ -198,8 +198,15 @@ export async function deleteWorkflow(id: string, requesterId: string) {
     select: { authorId: true },
   });
   if (!existing) throw new NotFoundError("Workflow not found");
-  // if (existing.authorId !== requesterId)
-  //   throw new ForbiddenError("You do not own this workflow");
+
+  const isOwner = existing.authorId === requesterId;
+  const user = await prisma.user.findUnique({
+    where: { id: requesterId },
+    select: { role: true },
+  });
+  const isAdmin = user?.role === "ADMIN";
+
+  if (!isOwner && !isAdmin) throw new ForbiddenError("You do not own this workflow");
 
   await prisma.workflow.delete({ where: { id } });
 }
