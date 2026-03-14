@@ -156,4 +156,7 @@ model Newsletter {
   id         String   @id @default(cuid())
   email      String   @unique  
   subscribed Boolean  @default(true)
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@map("newsletter_subscribers")
 }

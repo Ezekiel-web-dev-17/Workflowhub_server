@@ -45,15 +45,15 @@ export const subscribe = async (
 
     if (email.length > 50) throw Error("Email too long");
 
-    await prisma.workflow.create({
+    await prisma.newsletter.create({
       data: {
-        email: email.trim().toLowerCase().substring(0, 50),
+        email: email.trim().toLowerCase(),
       },
     });
 
     return successResponse(
       res,
-      "Subscribe for our newsletter successfully.",
+      "Subscribe for Stackshare's newsletter successfully.",
       200,
     );
   } catch (error: any) {
@@ -86,7 +86,9 @@ export const subscribers = async (
         "Only admins are allowed access to this resource!",
       );
 
-    const subscribers = await prisma.workflow.findMany({ where: { email } });
+    const subscribers = await prisma.newsletter.findMany({
+      where: {},
+    });
 
     return successResponse(res, "Subscribers found", subscribers, 200);
   } catch (error) {
