@@ -40,7 +40,7 @@ function parseOrThrow<T>(
 }
 
 /** Returns the authenticated user's ID or throws 401. */
-function requireUserId(req: Request): string {
+export function requireUserId(req: Request): string {
   const userId = req.user?.userId;
   if (!userId) throw new UnauthorizedError("Authentication required");
   return userId;

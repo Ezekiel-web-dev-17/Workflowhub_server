@@ -151,3 +151,9 @@ model ToolPricing {
 
   @@map("tool_pricing")
 }
+
+model Newsletter {
+  id         String   @id @default(cuid())
+  email      String   @unique  
+  subscribed Boolean  @default(true)
+}
