@@ -98,6 +98,8 @@ model Tools {
   id           Int            @id @default(autoincrement())
   name         String         @unique
   description  String
+  roles        String[]
+  tasks         String[]
   avgTimeSaved String
   bestUseCases String[]
   poorUseCases String[]

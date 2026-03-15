@@ -112,9 +112,19 @@ export async function create_tool(
       req.body.alternatives = JSON.parse(req.body.alternatives);
     }
 
+    if (typeof req.body.roles === "string") {
+      req.body.roles = JSON.parse(req.body.roles);
+    }
+
+    if (typeof req.body.tasks === "string") {
+      req.body.tasks = JSON.parse(req.body.tasks);
+    }
+
     if (typeof req.body.pricing === "string") {
       req.body.pricing = JSON.parse(req.body.pricing);
     }
+
+    console.log(req.body);
 
     const body = parseOrThrow(createToolSchema, req.body);
     const tool = await ToolService.createTool(body);
@@ -144,6 +154,14 @@ export async function update_tool(
   try {
     if (typeof req.body.bestUseCases === "string") {
       req.body.bestUseCases = JSON.parse(req.body.bestUseCases);
+    }
+
+    if (typeof req.body.roles === "string") {
+      req.body.bestUseCases = JSON.parse(req.body.roles);
+    }
+
+    if (typeof req.body.tasks === "string") {
+      req.body.bestUseCases = JSON.parse(req.body.tasks);
     }
 
     if (typeof req.body.poorUseCases === "string") {

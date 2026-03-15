@@ -73,15 +73,21 @@ export async function listTools({
   order,
   page,
   limit,
+  roles,
+  tasks,
 }: ListToolsQuery) {
-  const where = search
-    ? {
+  const where: import("@prisma/client").Prisma.ToolsWhereInput = {
+    ...(search
+      ? {
         OR: [
-          { name: { contains: search, mode: "insensitive" as const } },
-          { description: { contains: search, mode: "insensitive" as const } },
+          { name: { contains: search, mode: "insensitive" } },
+          { description: { contains: search, mode: "insensitive" } },
         ],
       }
-    : {};
+      : {}),
+    ...(roles ? { roles: { has: roles } } : {}),
+    ...(tasks ? { tasks: { has: tasks } } : {}),
+  };
 
   const [tools, total] = await Promise.all([
     prisma.tools.findMany({

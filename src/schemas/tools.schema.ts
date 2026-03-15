@@ -15,6 +15,8 @@ export const listToolsQuerySchema = paginationSchema.extend({
     .enum(["rating", "rateCount", "name", "createdAt"])
     .default("rating"),
   order: z.enum(["asc", "desc"]).default("desc"),
+  roles: z.string().optional(),
+  tasks: z.string().optional(),
 });
 
 // ─── Body schemas ─────────────────────────────────────────────────────────────
@@ -38,6 +40,12 @@ export const createToolSchema = z.object({
   poorUseCases: z.array(z.string().min(1)).default([]),
   alternatives: z.array(alternativeSchema).default([]),
   pricing: z.array(pricingSchema).default([]),
+  roles: z
+    .array(z.string().min(1))
+    .min(1, "Roles that use this tool are required"),
+  tasks: z
+    .array(z.string().min(1))
+    .min(1, "Tasks in which this tool is used are required."),
   uploadedFile: z
     .object({
       public_id: z.string(),
