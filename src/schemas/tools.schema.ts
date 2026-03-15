@@ -19,6 +19,10 @@ export const listToolsQuerySchema = paginationSchema.extend({
   tasks: z.string().optional(),
 });
 
+export const getToolByNameSchema = z.object({
+  name: z.string().min(1),
+});
+
 // ─── Body schemas ─────────────────────────────────────────────────────────────
 
 const alternativeSchema = z.object({

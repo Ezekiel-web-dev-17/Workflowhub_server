@@ -79,11 +79,11 @@ export async function listTools({
   const where: import("@prisma/client").Prisma.ToolsWhereInput = {
     ...(search
       ? {
-          OR: [
-            { name: { contains: search, mode: "insensitive" } },
-            { description: { contains: search, mode: "insensitive" } },
-          ],
-        }
+        OR: [
+          { name: { contains: search, mode: "insensitive" } },
+          { description: { contains: search, mode: "insensitive" } },
+        ],
+      }
       : {}),
     ...(roles ? { roles: { has: roles } } : {}),
     ...(tasks ? { tasks: { has: tasks } } : {}),
@@ -103,7 +103,22 @@ export async function listTools({
 }
 
 export async function getToolsName() {
-  const tool = prisma.tools.findMany({
+  const tool = await prisma.tools.findMany({
+    select: {
+      id: true,
+      name: true,
+      image: true,
+    },
+  });
+
+  if (!tool) throw new NotFoundError("No tool found.");
+
+  return tool;
+}
+
+export async function getToolByName(name: string) {
+  const tool = await prisma.tools.findFirst({
+    where: { name: { equals: name, mode: "insensitive" } },
     select: {
       id: true,
       name: true,

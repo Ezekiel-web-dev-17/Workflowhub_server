@@ -35,7 +35,7 @@ function buildMeta(total: number, page: number, limit: number) {
 // ─── Workflow include config ───────────────────────────────────────────────────
 // Select only the author's public fields so we don't leak password hashes.
 const WORKFLOW_INCLUDE = {
-  author: { select: { id: true, name: true, avatar: true } },
+  author: { select: { id: true, name: true } },
   steps: true,
   result: true,
 } as const;
@@ -51,7 +51,17 @@ export async function listWorkflows({
     prisma.workflow.findMany({
       where: { isDraft: false },
       orderBy: ORDER_BY_MAP[orderBy],
-      include: WORKFLOW_INCLUDE,
+      select: {
+        id: true,
+        title: true,
+        role: true,
+        toolStack: true,
+        description: true,
+        author: { select: { name: true } },
+        likes: true,
+        views: true,
+        createdAt: true,
+      },
       ...buildPagination(page, limit),
     }),
     prisma.workflow.count({ where: { isDraft: false } }),
@@ -84,7 +94,17 @@ export async function searchWorkflows({
     prisma.workflow.findMany({
       where,
       orderBy: ORDER_BY_MAP[orderBy],
-      include: WORKFLOW_INCLUDE,
+      select: {
+        id: true,
+        title: true,
+        role: true,
+        toolStack: true,
+        description: true,
+        author: { select: { name: true } },
+        likes: true,
+        views: true,
+        createdAt: true,
+      },
       ...buildPagination(page, limit),
     }),
     prisma.workflow.count({ where }),
@@ -127,16 +147,16 @@ export async function createWorkflow(
       // If uploadedFile exists, we tell Prisma to `create` the result right now
       ...(uploadedFile
         ? {
-            result: {
-              create: {
-                // Assuming your data is on uploadedFile like in the update function
-                url: uploadedFile.secure_url,
-                width: uploadedFile.width,
-                height: uploadedFile.height,
-                format: uploadedFile.format,
-              },
+          result: {
+            create: {
+              // Assuming your data is on uploadedFile like in the update function
+              url: uploadedFile.secure_url,
+              width: uploadedFile.width,
+              height: uploadedFile.height,
+              format: uploadedFile.format,
             },
-          }
+          },
+        }
         : {}),
     },
     include: WORKFLOW_INCLUDE,

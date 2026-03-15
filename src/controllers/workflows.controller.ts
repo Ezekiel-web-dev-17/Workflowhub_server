@@ -14,6 +14,7 @@ import {
 } from "../schemas/workflows.schema.js";
 import * as WorkflowService from "../services/workflows.service.js";
 import { deleteFromCloudinary } from "../middleware/upload.js";
+import { logger } from "../utils/logger.js";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -163,10 +164,10 @@ export async function create_workflow(
   } catch (error) {
     // Cleanup Cloudinary if the database transaction fails!
     if (req.body.uploadedFile?.public_id) {
-      console.log("Database failed, rolling back Cloudinary upload...");
+      logger.info("Database failed, rolling back Cloudinary upload...");
       // Use the delete function you already wrote!
       await deleteFromCloudinary(req.body.uploadedFile.public_id).catch((e) =>
-        console.error("Failed to delete orphaned file:", e),
+        logger.error("Failed to delete orphaned file:", e),
       );
     }
     return next(error);

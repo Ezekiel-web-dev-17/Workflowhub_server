@@ -10,14 +10,17 @@ import {
   update_review,
   delete_review,
   getToolsNamesOnly,
+  get_tool_by_name,
 } from "../controllers/tools.controller.js";
 import { uploadToCloudinary } from "../middleware/upload.js";
+import { redisCache } from "../middleware/cache.js";
 
 const router = Router();
 
 // ─── Public ───────────────────────────────────────────────────────────────────
 router.get("/", get_tools);
-router.get("/names", getToolsNamesOnly);
+router.get("/names", redisCache(getToolsNamesOnly), getToolsNamesOnly);
+router.get("/name", get_tool_by_name);
 router.get("/:id", get_tool);
 
 // ─── Admin-only (create/update/delete tools) ──────────────────────────────────

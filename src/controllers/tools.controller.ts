@@ -10,6 +10,7 @@ import {
   createToolSchema,
   updateToolSchema,
   reviewSchema,
+  getToolByNameSchema,
 } from "../schemas/tools.schema.js";
 import * as ToolService from "../services/tools.service.js";
 import { deleteFromCloudinary } from "../middleware/upload.js";
@@ -109,6 +110,25 @@ export async function get_tool(
 }
 
 /**
+ * GET /tools/:name
+ * Fetch a single tool with its image only using the tool name.
+ * Public.
+ */
+export async function get_tool_by_name(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const name = parseOrThrow(getToolByNameSchema, req.query);
+    const tool = await ToolService.getToolByName(name.name);
+    return successResponse(res, "Tool fetched successfully", tool);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+/**
  * POST /tools
  * Create a new tool.
  * Protected — admin only.
@@ -143,14 +163,11 @@ export async function create_tool(
       req.body.pricing = JSON.parse(req.body.pricing);
     }
 
-    console.log(req.body);
-
     const body = parseOrThrow(createToolSchema, req.body);
     const tool = await ToolService.createTool(body);
     return successResponse(res, "Tool created successfully", tool, 201);
   } catch (error) {
     if (req.body.uploadedFile?.public_id) {
-      console.log("Database failed, rolling back Cloudinary upload...");
       // Use the delete function you already wrote!
       await deleteFromCloudinary(req.body.uploadedFile.public_id).catch((e) =>
         console.error("Failed to delete orphaned file:", e),
