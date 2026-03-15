@@ -71,6 +71,25 @@ export async function get_tools(
 }
 
 /**
+ * GET /tools/name
+ * List all tools name only
+ * Public.
+ */
+export async function getToolsNamesOnly(
+  _req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const tools = await ToolService.getToolsName();
+
+    return successResponse(res, "Tools names fetched successfully", tools, 200);
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
  * GET /tools/:id
  * Fetch a single tool with its reviews, alternatives, and pricing.
  * Public.
@@ -157,11 +176,11 @@ export async function update_tool(
     }
 
     if (typeof req.body.roles === "string") {
-      req.body.bestUseCases = JSON.parse(req.body.roles);
+      req.body.roles = JSON.parse(req.body.roles);
     }
 
     if (typeof req.body.tasks === "string") {
-      req.body.bestUseCases = JSON.parse(req.body.tasks);
+      req.body.tasks = JSON.parse(req.body.tasks);
     }
 
     if (typeof req.body.poorUseCases === "string") {

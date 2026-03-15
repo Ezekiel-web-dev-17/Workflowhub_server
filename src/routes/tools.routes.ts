@@ -9,6 +9,7 @@ import {
   add_review,
   update_review,
   delete_review,
+  getToolsNamesOnly,
 } from "../controllers/tools.controller.js";
 import { uploadToCloudinary } from "../middleware/upload.js";
 
@@ -16,6 +17,7 @@ const router = Router();
 
 // ─── Public ───────────────────────────────────────────────────────────────────
 router.get("/", get_tools);
+router.get("/names", getToolsNamesOnly);
 router.get("/:id", get_tool);
 
 // ─── Admin-only (create/update/delete tools) ──────────────────────────────────

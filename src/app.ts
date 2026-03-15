@@ -21,7 +21,7 @@ export function createApp(): express.Application {
     cors({
       origin: env.CORS_ORIGIN,
       credentials: true,
-      methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+      methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
       allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
     }),
   );
