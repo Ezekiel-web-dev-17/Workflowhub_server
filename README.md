@@ -166,8 +166,6 @@ Expected response:
 ## Screenshots
 
 ![alt API Health Check](./screenshots/health.png)
-![alt Auth Flow](./screenshots/auth/register.png)
-![alt Auth Flow](./screenshots/auth/login.png)
 
 ## License
 
